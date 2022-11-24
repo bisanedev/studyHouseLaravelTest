@@ -12,7 +12,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -21,7 +21,8 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'nama',
         'email',
-        'password'
+        'password',
+        'expiredToken',
     ];
 
     /**
@@ -30,7 +31,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $hidden = [
-        'password'        
+        'password',
+        'expiredToken'      
     ];
 
     /**
@@ -48,8 +50,10 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function getJWTCustomClaims()
-    {
-        return [];
+    {        
+        return [
+            "expiredToken"  => $this->expiredToken,
+        ];
     }
 
 }

@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use DateTimeImmutable;
 
 class AuthController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login','register']]);
@@ -17,6 +17,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $now = new DateTimeImmutable(); 
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
@@ -31,7 +32,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email', 'password');       
 
         $token = Auth::attempt($credentials);
         if (!$token) {
@@ -40,6 +41,8 @@ class AuthController extends Controller
                 'message' => 'Unauthorized',
             ], 401);
         }
+
+        User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 year')->getTimestamp()]);
 
         $user = Auth::user();
         return response()->json([

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nama',200);
             $table->string('email')->unique();
             $table->string('password',300);
+            $table->integer('expiredToken')->nullable();
             $table->timestamps();
         });
     }

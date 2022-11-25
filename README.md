@@ -7,7 +7,7 @@ composer install
 php artisan migrate <br />
 php artisan db:seed
 # email and password defaults 
-email : admin@admin.com
+email : admin@admin.com <br />
 password : password
 # disadvantages
 middleware jwt belum sepenuh aman  dan belum di implementasikan fungsi remember me . umur token hanyalah 60 menit , dan fungsi error message untuk api juga tidak sepenuhnya selesai <br />

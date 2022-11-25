@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Notihnio\RequestParser\RequestParser;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Catatan;
+use App\Models\Kategori;
 
 class CatatanController extends Controller
 {
@@ -17,10 +18,12 @@ class CatatanController extends Controller
 
     public function index($id)
     {        
-        $data = Catatan::with(['User','Kategori'])->where('kategori_id', $id)->get();
+        $data = Catatan::with(['User'])->where('kategori_id', $id)->get();
+        $kategori = Kategori::findOrFail($id);
         return response()->json([
             'status' => 'success',
-            'message' => $data
+            'message' => $data,
+            'kategori' => $kategori
         ]);
     }
 

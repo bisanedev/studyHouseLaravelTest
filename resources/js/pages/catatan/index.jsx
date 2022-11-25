@@ -67,10 +67,8 @@ function PageCatat(props) {
     ).then(response => {  
       if(response.data.message.length > 0){
         setData(response.data.message);
-      }      
-      if(response.data.message[0].kategori){
-        setKategori(response.data.message[0].kategori);
-      }      
+      } 
+      setKategori(response.data.kategori);     
     }).catch(error => {
         console.log(error.response.status);
         if(error.response.status == 401){                             
@@ -155,7 +153,7 @@ function PageCatat(props) {
       <title>Catatan {kategori.nama}</title>
     </Helmet>
     <div className="row justify-content-between mt-4 mb-3">
-      <div className="col-4" style={{display:"flex"}}>
+      <div className="col-6" style={{display:"flex"}}>
         <Link to="/" className="btn btn-secondary btn-sm" style={{height: 32}}>Back</Link>
         <h2 className="text-uppercase" style={{marginLeft:5}}>Catatan {kategori.nama}</h2>
       </div>

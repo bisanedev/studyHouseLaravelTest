@@ -29,6 +29,16 @@ function PageBeranda(props) {
     }, 300);
   }
 
+  /*--- Edit Modal ---*/
+  const editModal = () => {
+    console.log("edit")
+  }
+
+  /*--- Delete Modal ---*/
+  const deleteModal = () => {
+    console.log("delete")
+  }
+
   /*--- Logout ---*/
   const logout = () => {   
       window.localStorage.clear();
@@ -53,6 +63,12 @@ function PageBeranda(props) {
       {data.length > 0 && data.map((value,k) => (          
         <div key={k} className="col-xl-3 col-sm-6 col-12 mb-4">
           <div className="card">
+            <div style={{position:"absolute",right:10,top:0}}>
+              <button type="button" className="btn-close" aria-label="Close" onClick={() => deleteModal()}/>
+            </div>
+            <div style={{position:"absolute",left:10,bottom:10}}>
+              <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => editModal()}>edit</button>
+            </div>
             <div className="card-body">
               <div className="d-flex justify-content-between p-3">
                 <div className="align-self-center">
@@ -60,7 +76,7 @@ function PageBeranda(props) {
                 </div>
                 <div className="text-center col-12">
                   <h3>{value.nama}</h3>
-                  <Link className="mb-0" to={"/catatan/kategori/"+value.id}>Lihat Catatan</Link>
+                  <Link className="mb-0" style={{fontSize: 12}} to={"/catatan/kategori/"+value.id}>Lihat Catatan</Link>
                 </div>
               </div>
             </div>

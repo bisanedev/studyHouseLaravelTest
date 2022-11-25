@@ -8,7 +8,8 @@ import {AddModal,EditModal} from '../../components/modal';
 import { toast } from 'react-toastify';
 
 const FIELD_NAMES = {
-  NAMA: 'nama'  
+  TITLE: 'title',
+  TEXT: 'text',  
 }
 
 function PageCatat(props) {
@@ -17,7 +18,9 @@ function PageCatat(props) {
   const [data, setData] = React.useState([]);
   const [kategori, setKategori] = React.useState([]);
   const [formValues, changeFormValues] = React.useState({
-    [FIELD_NAMES.NAMA]: ''
+    [FIELD_NAMES.TITLE]: '',
+    [FIELD_NAMES.TEXT]: '',
+
   })
   /*--- modal state ---*/
   const [showCreate, setShowCreate] = React.useState(false);
@@ -28,6 +31,7 @@ function PageCatat(props) {
   /*--- props navigate ---*/
   const navigate = props.navigate;
   const kategoriID = props.params.kategoriID;
+  const authData = props.authData;
   /*--- componentdidmount ---*/
   React.useEffect(() => { 
 
@@ -78,16 +82,19 @@ function PageCatat(props) {
   /*--- Create Request ---*/
   const CreateRequest = () => {
     var formData = new FormData();      
-    formData.append('nama', formValues[FIELD_NAMES.NAMA]); 
+    formData.append('title', formValues[FIELD_NAMES.TITLE]);
+    formData.append('text', formValues[FIELD_NAMES.TEXT]); 
+    formData.append('kategoriID', kategoriID);
+    formData.append('userID', authData.id);
     axios({
       method: 'post',
-      url: '/api/kategori',
+      url: '/api/catatan',
       data: formData
     }).then(response => {                       
       toast.success(response.data.message);
       setShowCreate(false);
-      changeFormValues({[FIELD_NAMES.NAMA]: ''})
-      fetchData();
+      changeFormValues({[FIELD_NAMES.TITLE]: '',[FIELD_NAMES.TEXT]: ''})
+      fetchData(kategoriID);
     }).catch(error => {
       if(error.response.status == 401){                             
         logout();
@@ -99,15 +106,16 @@ function PageCatat(props) {
   const EditRequest = () => {
     var formData = new FormData();
     formData.append('id', pickData.id);     
-    formData.append('nama', pickData.nama); 
+    formData.append('title', pickData.title); 
+    formData.append('text', pickData.text); 
     axios({
       method: 'patch',
-      url: '/api/kategori',
+      url: '/api/catatan',
       data: formData
     }).then(response => {                       
       toast.success(response.data.message);
       setShowEdit(false);
-      fetchData();
+      fetchData(kategoriID);
     }).catch(error => {
       if(error.response.status == 401){                             
         logout();
@@ -121,12 +129,12 @@ function PageCatat(props) {
     formData.append('id', pickData.id);     
     axios({
       method: 'delete',
-      url: '/api/kategori',
+      url: '/api/catatan',
       data: formData
     }).then(response => {                       
       toast.success(response.data.message);
       setShowDelete(false);
-      fetchData();
+      fetchData(kategoriID);
     }).catch(error => {
       if(error.response.status == 401){                             
         logout();
@@ -178,7 +186,7 @@ function PageCatat(props) {
       ))} 
     </div>
     <AddModal show={showCreate}
-          height="200px"
+          height="300px"
           width="400px" 
           title="Menambahkan Catatan" 
           close={() => setShowCreate(false)}        
@@ -186,13 +194,17 @@ function PageCatat(props) {
     >
 
     <div className="form-floating mb-2 p-2">
-      <input type="text" className="form-control" placeholder="Judul" name={FIELD_NAMES.NAMA} value={formValues[FIELD_NAMES.NAMA]} onChange={handleInputChange(FIELD_NAMES.NAMA)} />
+      <input type="text" className="form-control" placeholder="Judul" name={FIELD_NAMES.TITLE} value={formValues[FIELD_NAMES.TITLE]} onChange={handleInputChange(FIELD_NAMES.TITLE)} />
       <label>Judul</label>
+    </div>
+    <div className="form-floating mb-2 p-2">
+      <input type="text" className="form-control" placeholder="ISI CATATAN" name={FIELD_NAMES.TEXT} value={formValues[FIELD_NAMES.TEXT]} onChange={handleInputChange(FIELD_NAMES.TEXT)} />
+      <label>Catatan</label>
     </div>
 
     </AddModal>
     <EditModal show={showEdit}
-          height="200px"
+          height="300px"
           width="400px" 
           title="Edit Catatan" 
           close={() => setShowEdit(false)}        
@@ -200,13 +212,17 @@ function PageCatat(props) {
     >
 
     <div className="form-floating mb-2 p-2">
-      <input type="text" value={pickData.nama} className="form-control" placeholder="Judul" name="nama" onChange={e => handleInputChangeEdit(e)} />
+      <input type="text" value={pickData.title} className="form-control" placeholder="Judul" name="title" onChange={e => handleInputChangeEdit(e)} />
       <label>Judul</label>
+    </div>
+    <div className="form-floating mb-2 p-2">
+      <input type="text" className="form-control" placeholder="ISI CATATAN" name="text" value={pickData.text} onChange={e => handleInputChangeEdit(e)} />
+      <label>Catatan</label>
     </div>
 
     </EditModal>
     <DeleteDialog show={showDelete} 
-      title="Hapus" subtitle={"Yakin hapus Catatan "+pickData.nama+" ?"} 
+      title="Hapus" subtitle={"Yakin hapus Catatan "+pickData.title+" ?"} 
       close={() => setShowDelete(false)} 
       onClick={() => deleteRequest()}
     />

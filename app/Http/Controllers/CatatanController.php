@@ -13,6 +13,11 @@ class CatatanController extends Controller
         $this->middleware('auth:api');
     }
 
+    public function index()
+    {
+        echo "create";
+    }
+
     public function create(Request $request)
     {
         echo "create";

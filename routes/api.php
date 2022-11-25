@@ -30,12 +30,14 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::controller(KategoriController::class)->group(function () {
+    Route::get('/kategori', 'index');
     Route::post('/kategori', 'create');
     Route::patch('/kategori', 'update');
     Route::delete('/kategori', 'delete');
 });
 
 Route::controller(CatatanController::class)->group(function () {
+    Route::get('/catatan', 'index');
     Route::post('/catatan', 'create');
     Route::patch('/catatan', 'update');
     Route::delete('/catatan', 'delete');

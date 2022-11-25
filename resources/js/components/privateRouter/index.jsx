@@ -5,6 +5,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import { ToastContainer } from 'react-toastify';
 
 function PrivateRoute(props) {    
     const authToken = window.localStorage.getItem('userToken');  
@@ -48,6 +49,7 @@ function PrivateRoute(props) {
     <Container>
       <props.komponen authToken={authToken} authData={authData} params={params} navigate={navigate} />
     </Container>
+    <ToastContainer hideProgressBar={true} autoClose={2000}/>
     </>          
     ):(
       <Navigate to="/login" />

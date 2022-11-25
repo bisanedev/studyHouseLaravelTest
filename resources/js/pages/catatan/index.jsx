@@ -15,6 +15,7 @@ function PageCatat(props) {
   const timer = React.useRef(null);
   /*--- all data ---*/
   const [data, setData] = React.useState([]);
+  const [kategori, setKategori] = React.useState([]);
   const [formValues, changeFormValues] = React.useState({
     [FIELD_NAMES.NAMA]: ''
   })
@@ -60,7 +61,12 @@ function PageCatat(props) {
     axios.get(
       window.location.origin + "/api/catatan/kategori/"+id+"?nocache="+Date.now()
     ).then(response => {  
-      setData(response.data.message);
+      if(response.data.message.length > 0){
+        setData(response.data.message);
+      }      
+      if(response.data.message[0].kategori){
+        setKategori(response.data.message[0].kategori);
+      }      
     }).catch(error => {
         console.log(error.response.status);
         if(error.response.status == 401){                             
@@ -138,12 +144,12 @@ function PageCatat(props) {
   return (    
     <>
     <Helmet>
-      <title>Catatan</title>
+      <title>Catatan {kategori.nama}</title>
     </Helmet>
     <div className="row justify-content-between mt-4 mb-3">
       <div className="col-4" style={{display:"flex"}}>
         <Link to="/" className="btn btn-secondary btn-sm" style={{height: 32}}>Back</Link>
-        <h2 className="text-uppercase" style={{marginLeft:5}}>Catatan</h2>
+        <h2 className="text-uppercase" style={{marginLeft:5}}>Catatan {kategori.nama}</h2>
       </div>
       <div className="col-4 text-end">
         <Button variant="primary" onClick={() => setShowCreate(true)}>Tambah Catatan</Button>

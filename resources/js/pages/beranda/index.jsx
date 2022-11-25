@@ -7,10 +7,17 @@ import DeleteDialog from '../../components/dialog/delete';
 import {AddModal,EditModal} from '../../components/modal';
 import { toast } from 'react-toastify';
 
+const FIELD_NAMES = {
+  NAMA: 'nama'  
+}
+
 function PageBeranda(props) {
   const timer = React.useRef(null);
   /*--- all data ---*/
   const [data, setData] = React.useState([]);
+  const [formValues, changeFormValues] = React.useState({
+    [FIELD_NAMES.NAMA]: ''
+  })
   /*--- modal state ---*/
   const [showCreate, setShowCreate] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState(false);  
@@ -31,6 +38,22 @@ function PageBeranda(props) {
     return () => clearInterval(timer.current);
   }, []);
 
+  const handleInputChange = fieldName => e => {
+    const fieldValue = e.target.value
+    changeFormValues(prevState => ({
+      ...prevState,
+      [fieldName]: fieldValue
+    }))
+  }
+
+  const handleInputChangeEdit = (e) => {
+    const fieldName = e.target.name;
+    const fieldValue = e.target.value;    
+    setPickData(prevState => ({
+      ...prevState,
+      [fieldName]: fieldValue
+    }))
+  }  
 
   /*--- Fetch Data timer agar sempat load token header bearer ---*/
   const fetchData = () => {
@@ -48,12 +71,42 @@ function PageBeranda(props) {
 
   /*--- Create Request ---*/
   const CreateRequest = () => {
-    console.log("add")
+    var formData = new FormData();      
+    formData.append('nama', formValues[FIELD_NAMES.NAMA]); 
+    axios({
+      method: 'post',
+      url: '/api/kategori',
+      data: formData
+    }).then(response => {                       
+      toast.success(response.data.message);
+      setShowCreate(false);
+      changeFormValues({[FIELD_NAMES.NAMA]: ''})
+      fetchData();
+    }).catch(error => {
+      if(error.response.status == 401){                             
+        logout();
+      }      
+    });
   }
 
-  /*--- Edit Modal ---*/
-  const editModal = () => {
-    console.log("edit")
+  /*--- Edit Request ---*/
+  const EditRequest = () => {
+    var formData = new FormData();
+    formData.append('id', pickData.id);     
+    formData.append('nama', pickData.nama); 
+    axios({
+      method: 'patch',
+      url: '/api/kategori',
+      data: formData
+    }).then(response => {                       
+      toast.success(response.data.message);
+      setShowEdit(false);
+      fetchData();
+    }).catch(error => {
+      if(error.response.status == 401){                             
+        logout();
+      }      
+    });
   }
 
   /*--- Delete Request ---*/
@@ -126,7 +179,7 @@ function PageBeranda(props) {
     >
 
     <div className="form-floating mb-2 p-2">
-      <input type="text" className="form-control" placeholder="Nama Kategori" />
+      <input type="text" className="form-control" placeholder="Nama Kategori" name={FIELD_NAMES.NAMA} value={formValues[FIELD_NAMES.NAMA]} onChange={handleInputChange(FIELD_NAMES.NAMA)} />
       <label>Nama Kategori</label>
     </div>
 
@@ -136,11 +189,11 @@ function PageBeranda(props) {
           width="400px" 
           title="Edit Kategori" 
           close={() => setShowEdit(false)}        
-          onClick={() => CreateRequest()}
+          onClick={() => EditRequest()}
     >
 
     <div className="form-floating mb-2 p-2">
-      <input type="text" value={pickData.nama} className="form-control" placeholder="Nama Kategori" />
+      <input type="text" value={pickData.nama} className="form-control" placeholder="Nama Kategori" name="nama" onChange={e => handleInputChangeEdit(e)} />
       <label>Nama Kategori</label>
     </div>
 

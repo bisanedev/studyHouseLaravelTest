@@ -16,9 +16,9 @@ function PageLogin(props) {
     [FIELD_NAMES.PASSWORD]: ''
   })
   const navigate = useNavigate();
+
   const handleInputChange = fieldName => e => {
     const fieldValue = e.target.value
-
     changeFormValues(prevState => ({
       ...prevState,
       [fieldName]: fieldValue

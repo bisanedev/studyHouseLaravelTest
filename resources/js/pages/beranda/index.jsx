@@ -4,39 +4,50 @@ import Button from 'react-bootstrap/Button';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import DeleteDialog from '../../components/dialog/delete';
+import {AddModal,EditModal} from '../../components/modal';
+import { toast } from 'react-toastify';
 
 function PageBeranda(props) {
   const timer = React.useRef(null);
+  /*--- all data ---*/
   const [data, setData] = React.useState([]);
-  const [showDelete, setShowDelete] = React.useState(false);
+  /*--- modal state ---*/
+  const [showCreate, setShowCreate] = React.useState(false);
+  const [showEdit, setShowEdit] = React.useState(false);  
+  const [showDelete, setShowDelete] = React.useState(false);  
+  /*--- single pick data ---*/
   const [pickData, setPickData] = React.useState([]);
+  /*--- props navigate ---*/
   const navigate = props.navigate;
 
-  React.useEffect(() => {    
-    fetchData();
-    /*--- unload timer ---*/
+  /*--- componentdidmount ---*/
+  React.useEffect(() => { 
+
+    timer.current = setTimeout(() => { 
+      fetchData();
+    }, 300); 
+    
+     /*--- componentWillUnmount ---*/
     return () => clearInterval(timer.current);
   }, []);
 
 
   /*--- Fetch Data timer agar sempat load token header bearer ---*/
   const fetchData = () => {
-   timer.current = setTimeout(() => {
-      axios.get(
-        window.location.origin + "/api/kategori?nocache="+Date.now()
-      ).then(response => {  
-        setData(response.data.message);
-      }).catch(error => {
+    axios.get(
+      window.location.origin + "/api/kategori?nocache="+Date.now()
+    ).then(response => {  
+      setData(response.data.message);
+    }).catch(error => {
         console.log(error.response.status);
         if(error.response.status == 401){                             
           logout();
         }
-      });
-    }, 300);
+    });    
   }
 
-  /*--- add Modal ---*/
-  const addModal = () => {
+  /*--- Create Request ---*/
+  const CreateRequest = () => {
     console.log("add")
   }
 
@@ -45,9 +56,23 @@ function PageBeranda(props) {
     console.log("edit")
   }
 
-  /*--- Delete Modal ---*/
-  const deleteModal = () => {
-    console.log("delete")
+  /*--- Delete Request ---*/
+  const deleteRequest = () => {
+    var formData = new FormData();
+    formData.append('id', pickData.id);     
+    axios({
+      method: 'delete',
+      url: '/api/kategori',
+      data: formData
+    }).then(response => {                       
+      toast.success(response.data.message);
+      setShowDelete(false);
+      fetchData();
+    }).catch(error => {
+      if(error.response.status == 401){                             
+        logout();
+      }      
+    });
   }
 
   /*--- Logout ---*/
@@ -67,7 +92,7 @@ function PageBeranda(props) {
         <h2 className="text-uppercase">Kategori</h2>
       </div>
       <div className="col-4 text-end">
-        <Button variant="primary" onClick={() => addModal()}>Tambah Kategori</Button>
+        <Button variant="primary" onClick={() => setShowCreate(true)}>Tambah Kategori</Button>
       </div>
     </div>
     <div className="row">
@@ -78,7 +103,7 @@ function PageBeranda(props) {
               <button type="button" className="btn-close" aria-label="Close" onClick={() => {setShowDelete(true);setPickData(value)}}/>
             </div>
             <div style={{position:"absolute",left:10,bottom:10}}>
-              <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => editModal()}>edit</button>
+              <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => {setShowEdit(true);setPickData(value)}}>edit</button>
             </div>
             <div className="card-body">
               <div className="d-flex justify-content-between p-3">               
@@ -92,10 +117,38 @@ function PageBeranda(props) {
         </div> 
       ))} 
     </div>
+    <AddModal show={showCreate}
+          height="200px"
+          width="400px" 
+          title="Menambahkan Kategori" 
+          close={() => setShowCreate(false)}        
+          onClick={() => CreateRequest()}
+    >
+
+    <div className="form-floating mb-2 p-2">
+      <input type="text" className="form-control" placeholder="Nama Kategori" />
+      <label>Nama Kategori</label>
+    </div>
+
+    </AddModal>
+    <EditModal show={showEdit}
+          height="200px"
+          width="400px" 
+          title="Edit Kategori" 
+          close={() => setShowEdit(false)}        
+          onClick={() => CreateRequest()}
+    >
+
+    <div className="form-floating mb-2 p-2">
+      <input type="text" value={pickData.nama} className="form-control" placeholder="Nama Kategori" />
+      <label>Nama Kategori</label>
+    </div>
+
+    </EditModal>
     <DeleteDialog show={showDelete} 
       title="Hapus" subtitle={"Yakin hapus Kategori "+pickData.nama+" ?"} 
       close={() => setShowDelete(false)} 
-      onClick={() => console.log("hapus")}
+      onClick={() => deleteRequest()}
     />
     </> 
   );

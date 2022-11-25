@@ -18,7 +18,7 @@ function PrivateRoute(props) {
     },[]);
   
     const logOut = () => {
-      window.localStorage.removeItem('userToken');
+      window.localStorage.clear();
       delete axios.defaults.headers.common['Authorization'];    
       navigate('/login');
     }

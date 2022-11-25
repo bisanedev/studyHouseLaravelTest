@@ -6,7 +6,7 @@ composer install
 # migration
 php artisan migrate <br />
 php artisan db:seed
-# email and password defaults 
+# login email and password 
 email : admin@admin.com <br />
 password : password
 # disadvantages

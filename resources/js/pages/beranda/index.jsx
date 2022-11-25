@@ -8,7 +8,7 @@ function PageBeranda(props) {
   const timer = React.useRef(null);
   const [data, setData] = React.useState([]);
   const navigate = props.navigate;
-  
+
   React.useEffect(() => {    
     fetchData();
     return () => clearInterval(timer.current);
@@ -54,7 +54,7 @@ function PageBeranda(props) {
         <div key={k} className="col-xl-3 col-sm-6 col-12 mb-4">
           <div className="card">
             <div className="card-body">
-              <div className="d-flex justify-content-between px-md-1">
+              <div className="d-flex justify-content-between p-3">
                 <div className="align-self-center">
                   <i className="fas fa-pencil-alt text-info fa-3x"></i>
                 </div>

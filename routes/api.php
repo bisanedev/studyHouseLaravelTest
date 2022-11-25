@@ -37,7 +37,7 @@ Route::controller(KategoriController::class)->group(function () {
 });
 
 Route::controller(CatatanController::class)->group(function () {
-    Route::get('/catatan', 'index');
+    Route::get('/catatan/kategori/{id}', 'index');
     Route::post('/catatan', 'create');
     Route::patch('/catatan', 'update');
     Route::delete('/catatan', 'delete');

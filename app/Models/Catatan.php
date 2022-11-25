@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Kategori;
 
 class Catatan extends Model
 {
@@ -14,11 +16,11 @@ class Catatan extends Model
     
     public function user()
     {
-        return $this->belongsTo('App\User', 'user_id', 'id');
+        return $this->belongsTo(User::class);
     }
 
     public function kategori()
     {
-        return $this->belongsTo('App\Kategori', 'kategori_id', 'id');
+        return $this->belongsTo(Kategori::class);
     }
 }

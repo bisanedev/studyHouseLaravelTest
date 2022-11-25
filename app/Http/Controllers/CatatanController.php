@@ -13,9 +13,13 @@ class CatatanController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function index()
-    {
-        echo "create";
+    public function index($id)
+    {        
+        $data = Catatan::with(['User','Kategori'])->where('kategori_id', $id)->get();
+        return response()->json([
+            'status' => 'success',
+            'message' => $data
+        ]);
     }
 
     public function create(Request $request)

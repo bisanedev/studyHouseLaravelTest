@@ -1,10 +1,10 @@
 # studyHouseLaravelTest
  test laravel + reactjs + SPA (Single Page Application)
 # install dependencies
-npm install
+npm install <br />
 composer install
 # migration
-php artisan migrate
+php artisan migrate <br />
 php artisan db:seed
 # email and password defaults 
 email : admin@admin.com

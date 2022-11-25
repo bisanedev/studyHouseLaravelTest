@@ -7,7 +7,7 @@
     @vite('resources/sass/app.scss')
   </head>
   <body>   
-    <div id="root"></div>    
+  <div id="root" class="container-fluid" style="padding:0 !important"></div>       
     @vite('resources/js/app.jsx')
   </body>
 </html>

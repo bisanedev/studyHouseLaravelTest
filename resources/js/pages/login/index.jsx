@@ -1,58 +1,90 @@
 import React from 'react';
-import { Link } from "react-router-dom";
 import { Helmet } from 'react-helmet';
+import axios from 'axios';
+import {Navigate,useNavigate} from "react-router-dom";
+import { ToastContainer ,toast } from 'react-toastify';
 
-class PageLogin extends React.Component{
+const FIELD_NAMES = {
+    EMAIL: 'email',
+    PASSWORD: 'password'
+}
 
-    constructor(props) {
-        super(props); 
-        this.state = {  
+function PageLogin(props) {
+  const [hasLogin, setHasLogin] = React.useState(false);
+  const [formValues, changeFormValues] = React.useState({
+    [FIELD_NAMES.EMAIL]: '',
+    [FIELD_NAMES.PASSWORD]: ''
+  })
+  const navigate = useNavigate();
+  const handleInputChange = fieldName => e => {
+    const fieldValue = e.target.value
 
-        }        
+    changeFormValues(prevState => ({
+      ...prevState,
+      [fieldName]: fieldValue
+    }))
+  }
+
+  React.useEffect(() => {
+    const data = window.localStorage.getItem('userToken');
+    if (data){
+      setHasLogin(true);
     }
+  }, []);
 
-    componentDidMount() {     
+  const SubmitLogin = () => {
+    var formData = new FormData();
+    formData.append('email', formValues[FIELD_NAMES.EMAIL]);
+    formData.append('password', formValues[FIELD_NAMES.PASSWORD]);    
+    axios({
+      method: 'post',
+      url: '/api/login',
+      data: formData
+    }).then(response => {                 
+      //console.log(response.data);
+      window.localStorage.setItem("userData", JSON.stringify(response.data.user));          
+      window.localStorage.setItem("userToken", response.data.authorisation.token); 
+      navigate("/");
+    }).catch(error => {
+      if(error.response.data.message.email){   
+        toast.error(error.response.data.message.email.toString());        
+      }
+      else if(error.response.data.message.password){   
+        toast.error(error.response.data.message.password.toString());
+      }
+      else{
+        toast.error(error.response.data.message);
+      }
+      //console.log(error.response.data.message); 
+    });    
+  }
 
-    }
+  //redirect if user is login already
+  if(hasLogin){return <Navigate to={"/"} />;}
 
-    render() {
-        return (
-            <div className="content">
-            <div className="container">
-            <div className="row">
-                <div className="col-md-6">
-                    <img src="images/undraw_remotely_2j6y.svg" alt="Image" className="img-fluid"/>
-                </div>
-                <div className="col-md-6 contents">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                    <div className="mb-4">
-                    <h3>Sign In</h3>
-                    <p className="mb-4">Aplikasi Catat Mencatat</p>
-                    </div>
-                    <form action="#" method="post">
-                    <div className="form-group first">
-                        <label for="email">Email</label>
-                        <input type="email" className="form-control" id="username"/>
+  return (   
+    <section className="text-center" style={{paddingTop:40,paddingBottom:40,marginTop:80}}>
+    <Helmet>
+          <title>Login</title>
+    </Helmet>
+    <main className="form-signin w-100 m-auto">
+        <img className="mb-4" src="https://getbootstrap.com/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"/>
+        <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
-                    </div>
-                    <div className="form-group last mb-4">
-                        <label for="password">Password</label>
-                        <input type="password" className="form-control" id="password"/>                        
-                    </div>                    
-                    <input type="submit" value="Log In" className="btn btn-block btn-primary"/>
-                    </form>
-                    </div>
-                </div>                
-                </div>                
-            </div>
-            </div>
-            </div>
-        )
-    }
- /* ------- script -------*/
-
- /* ------- end of script -------*/ 
+        <div className="form-floating">
+        <input type="email" className="form-control" name={FIELD_NAMES.EMAIL} value={formValues[FIELD_NAMES.EMAIL]} onChange={handleInputChange(FIELD_NAMES.EMAIL)} placeholder="name@example.com"/>
+        <label for="floatingInput">Email address</label>
+        </div>
+        <div className="form-floating">
+        <input type="password" className="form-control" name={FIELD_NAMES.PASSWORD} value={formValues[FIELD_NAMES.PASSWORD]}  onChange={handleInputChange(FIELD_NAMES.PASSWORD)} placeholder="Password"/>
+        <label for="floatingPassword">Password</label>
+        </div>
+        <button className="w-100 btn btn-lg btn-primary" type="submit" onClick={() => SubmitLogin()}>Sign in</button>
+        <p className="mt-5 mb-3 text-muted">© 2017–2022</p>
+    </main>
+    <ToastContainer hideProgressBar={true} autoClose={2000}/>
+    </section>
+  );
 }
 
 export default PageLogin;

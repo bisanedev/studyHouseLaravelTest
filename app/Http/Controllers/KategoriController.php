@@ -38,11 +38,16 @@ class KategoriController extends Controller
             ], 400);
         }
 
+        // catch jika database error
         try {
-            
+
             $data = new Kategori;
             $data->nama = $request->nama;
             $data->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => "Data ".$request->nama." Berhasil Ditambahkan"
+            ]);
 
         } catch (ModelNotFoundException $exception) {
             return response()->json([
@@ -50,11 +55,6 @@ class KategoriController extends Controller
                 'message' => "Create data bermasalah",
             ], 400);
         } 
-
-        return response()->json([
-            'status' => 'success',
-            'message' => "Data ".$request->nama." Berhasil Ditambahkan"
-        ]);
     }
 
     public function update()
@@ -73,6 +73,7 @@ class KategoriController extends Controller
             ], 400);
         }
 
+        // catch jika database error
         try {
             $data = Kategori::where('id', $_PATCH["id"])->firstOrFail();
             $data->nama = $_PATCH["nama"];
@@ -86,12 +87,7 @@ class KategoriController extends Controller
                 'status' => "error" ,
                 'message' => "Data Tidak ditemukan",
              ], 400);
-        }   
-
-        return response()->json([
-            'status' => 'success',
-            'message' => "Data ".$_PATCH["nama"]." Berhasil Di Perbarui"
-        ]);
+        } 
     }
 
     public function delete(Request $request)
@@ -108,7 +104,7 @@ class KategoriController extends Controller
                'message' => $validator->errors(),
             ], 400);
         }
-
+        // catch jika database error
         try {
             $data = Kategori::findOrFail($_DELETE["id"]);  
             $data->delete();          

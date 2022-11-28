@@ -11,6 +11,7 @@ const FIELD_NAMES = {
 
 function PageLogin(props) {
   const [hasLogin, setHasLogin] = React.useState(false);
+  const [remember, setRemember] = React.useState(false);
   const [formValues, changeFormValues] = React.useState({
     [FIELD_NAMES.EMAIL]: '',
     [FIELD_NAMES.PASSWORD]: ''
@@ -35,7 +36,8 @@ function PageLogin(props) {
   const SubmitLogin = () => {
     var formData = new FormData();
     formData.append('email', formValues[FIELD_NAMES.EMAIL]);
-    formData.append('password', formValues[FIELD_NAMES.PASSWORD]);    
+    formData.append('password', formValues[FIELD_NAMES.PASSWORD]);  
+    formData.append('remember', remember ? 1:0);
     axios({
       method: 'post',
       url: '/api/login',
@@ -78,6 +80,11 @@ function PageLogin(props) {
         <div className="form-floating">
         <input type="password" className="form-control" name={FIELD_NAMES.PASSWORD} value={formValues[FIELD_NAMES.PASSWORD]}  onChange={handleInputChange(FIELD_NAMES.PASSWORD)} placeholder="Password"/>
         <label for="floatingPassword">Password</label>
+        </div>
+        <div className="checkbox mb-3">
+          <label>
+            <input type="checkbox" value={remember} onClick={() => setRemember(!remember)}/> Remember me
+          </label>
         </div>
         <button className="w-100 btn btn-lg btn-primary" type="submit" onClick={() => SubmitLogin()}>Sign in</button>
         <p className="mt-5 mb-3 text-muted">© 2017–2022</p>

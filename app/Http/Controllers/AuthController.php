@@ -22,6 +22,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
+            'remember' => 'boolean'
         ]);
 
         // pesan jika  validator error
@@ -32,11 +33,18 @@ class AuthController extends Controller
             ], 400);
         }
 
-        User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 year')->getTimestamp()]);
-        
-        $credentials = $request->only('email', 'password');       
+        $credentials = $request->only('email', 'password');
 
-        $token = Auth::attempt($credentials);
+        if($request->remember == true){
+            // token berumur setahun
+            User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 year')->getTimestamp()]);            
+            $token = Auth::setTTL(525600)->attempt($credentials);
+        }else{
+            // token berumur sehari
+            User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 day')->getTimestamp()]);            
+            $token = Auth::setTTL(1440)->attempt($credentials);
+        }                
+
         if (!$token) {
             return response()->json([
                 'status' => 'error',

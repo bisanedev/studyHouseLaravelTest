@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use App\Models\User;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 
 class Authenticate implements AuthenticatesRequests
 {
@@ -40,18 +41,27 @@ class Authenticate implements AuthenticatesRequests
      */
     public function handle($request, Closure $next, ...$guards)
     {
-        $cekAuth = User::where([
-            ['id', auth()->payload()["uid"]],
-            ['expiredToken', auth()->payload()["expiredToken"]]
-        ])->first();
-        
-        if(!$cekAuth){
-            abort(response()->json(['error' => 'Unauthenticated.'], 401));
-        }
-                
-        $this->authenticate($request, $guards);
+      
+        try {
+            // prevent multiple tokens per user
+            $cekAuth = User::where([
+                ['id', auth()->payload()["uid"]],
+                ['expiredToken', auth()->payload()["expiredToken"]]
+            ])->exists();     
+            
+            if(!$cekAuth){
+                abort(response()->json(['error' => "user tak dikenal"], 401));
+            }       
 
-        return $next($request);
+            $this->authenticate($request, $guards);
+            return $next($request);
+        
+        } catch (TokenExpiredException $e) {
+        
+            abort(response()->json(['error' => 'token was expired.'], 401));           
+        
+        }                                
+
     }
 
     /**

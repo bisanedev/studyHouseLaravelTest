@@ -19,9 +19,19 @@ function PrivateRoute(props) {
     },[]);
   
     const logOut = () => {
-      window.localStorage.clear();
-      delete axios.defaults.headers.common['Authorization'];    
-      navigate('/login');
+      axios({
+        method: 'post',
+        url: '/api/logout'
+      }).then(response => {   
+
+        console.log(response);
+        window.localStorage.clear();
+        delete axios.defaults.headers.common['Authorization'];    
+        navigate('/login');
+
+      }).catch(error => {
+       console.log(error);   
+      });      
     }
 
     return authToken ? (

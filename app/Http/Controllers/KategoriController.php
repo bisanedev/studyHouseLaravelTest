@@ -24,6 +24,12 @@ class KategoriController extends Controller
         ]);
     }
 
+    public function coba()
+    {
+       // echo auth()->payload()["expiredToken"];
+       echo "coba saja";
+    }
+
     public function create(Request $request)
     {        
         $validator = Validator::make($request->all(), [

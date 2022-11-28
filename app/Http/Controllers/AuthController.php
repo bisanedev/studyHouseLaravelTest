@@ -32,6 +32,8 @@ class AuthController extends Controller
             ], 400);
         }
 
+        User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 year')->getTimestamp()]);
+        
         $credentials = $request->only('email', 'password');       
 
         $token = Auth::attempt($credentials);
@@ -41,8 +43,7 @@ class AuthController extends Controller
                 'message' => 'Unauthorized',
             ], 401);
         }
-
-        User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 year')->getTimestamp()]);
+        
 
         $user = Auth::user();
         return response()->json([

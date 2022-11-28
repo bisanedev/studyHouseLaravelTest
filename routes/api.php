@@ -34,6 +34,7 @@ Route::controller(KategoriController::class)->group(function () {
     Route::post('/kategori', 'create');
     Route::patch('/kategori', 'update');
     Route::delete('/kategori', 'delete');
+    Route::get('/kategori/coba', 'coba');
 });
 
 Route::controller(CatatanController::class)->group(function () {

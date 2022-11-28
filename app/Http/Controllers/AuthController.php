@@ -22,7 +22,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
-            'remember' => 'boolean'
+            'remember' => 'required|boolean'
         ]);
 
         // pesan jika  validator error

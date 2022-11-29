@@ -38,11 +38,11 @@ class AuthController extends Controller
         if($request->remember == true){
             // token berumur setahun
             User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 year')->getTimestamp()]);            
-            $token = Auth::setTTL(525600)->attempt($credentials);
+            $token = Auth::setTTL(525600)->claims(['domain' => $_SERVER['SERVER_NAME']])->attempt($credentials);
         }else{
             // token berumur sehari
             User::where('email', $request->email)->update(['expiredToken' => $now->modify('+1 day')->getTimestamp()]);            
-            $token = Auth::setTTL(1440)->attempt($credentials);
+            $token = Auth::setTTL(1440)->claims(['domain' => $_SERVER['SERVER_NAME']])->attempt($credentials);
         }                
 
         if (!$token) {

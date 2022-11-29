@@ -51,7 +51,12 @@ class Authenticate implements AuthenticatesRequests
             
             if(!$cekAuth){
                 abort(response()->json(['error' => "user tak dikenal"], 401));
-            }       
+            }      
+            
+            // prevent fake jwt from another server jwt issued
+            if(auth()->payload()["domain"] != $_SERVER['SERVER_NAME']){
+                abort(response()->json(['error' => "token tak dikenal"], 401));
+            }
 
             $this->authenticate($request, $guards);
             return $next($request);
